@@ -1,17 +1,13 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import { callout } from '../common/callout'
+
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log('HTTP trigger function processed a request.');
     const name = (req.query.name || (req.body && req.body.name));
 
-    // simulate I/O, 50mS
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: {backend: `processing name=${name}`}
-    };
-
+    context.res = await callout(process.env.DEPENDENT_URL, 1000)
+    //context.log (context.res)
 };
 
 export default httpTrigger;
